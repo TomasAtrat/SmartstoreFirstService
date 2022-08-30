@@ -1,10 +1,10 @@
-package com.smartstore.smartstorewebservice.products.services;
+package com.smartstore.smartstorewebservice.microservices.products.services;
 
 import com.smartstore.smartstorewebservice.common.util.HasLogger;
-import com.smartstore.smartstorewebservice.common.entities.Barcode;
-import com.smartstore.smartstorewebservice.common.entities.Product;
-import com.smartstore.smartstorewebservice.common.repositories.BarcodeRepository;
-import com.smartstore.smartstorewebservice.common.repositories.ProductRepository;
+import com.smartstore.smartstorewebservice.dataAccess.entities.Barcode;
+import com.smartstore.smartstorewebservice.dataAccess.entities.Product;
+import com.smartstore.smartstorewebservice.dataAccess.repositories.BarcodeRepository;
+import com.smartstore.smartstorewebservice.dataAccess.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

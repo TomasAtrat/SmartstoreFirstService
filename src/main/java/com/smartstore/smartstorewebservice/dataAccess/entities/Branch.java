@@ -1,10 +1,10 @@
-package com.smartstore.smartstorewebservice.common.entities;
+package com.smartstore.smartstorewebservice.dataAccess.entities;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "expedition_type")
-public class ExpeditionType {
+@Table(name = "branch")
+public class Branch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

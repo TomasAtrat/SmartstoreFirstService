@@ -1,4 +1,4 @@
-package com.smartstore.smartstorewebservice.common.entities;
+package com.smartstore.smartstorewebservice.dataAccess.entities;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
