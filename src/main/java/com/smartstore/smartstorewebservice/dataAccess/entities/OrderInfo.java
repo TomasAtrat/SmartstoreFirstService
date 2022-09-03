@@ -1,11 +1,13 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
+import com.smartstore.smartstorewebservice.common.IDataEntity;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "order_info")
-public class OrderInfo extends AbstractEntity{
+public class OrderInfo extends AbstractEntity implements IDataEntity {
 
     @Column(name = "delivery_date")
     private Date deliveryDate;
