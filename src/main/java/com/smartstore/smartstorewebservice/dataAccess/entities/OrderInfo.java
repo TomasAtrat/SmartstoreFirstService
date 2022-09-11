@@ -1,13 +1,11 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
-import com.smartstore.smartstorewebservice.common.IDataEntity;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "order_info")
-public class OrderInfo extends AbstractEntity implements IDataEntity {
+public class OrderInfo extends AbstractEntity {
 
     @Column(name = "delivery_date")
     private Date deliveryDate;
@@ -33,15 +31,15 @@ public class OrderInfo extends AbstractEntity implements IDataEntity {
     @Column(name = "description_4")
     private String description4;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "expedition_id", nullable = false)
     private ExpeditionType expedition;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

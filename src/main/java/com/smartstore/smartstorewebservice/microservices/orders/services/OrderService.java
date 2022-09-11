@@ -1,6 +1,6 @@
 package com.smartstore.smartstorewebservice.microservices.orders.services;
 
-import com.smartstore.smartstorewebservice.common.wrappers.ErrorList;
+import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
 import com.smartstore.smartstorewebservice.common.wrappers.ListOfOrderWrapper;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderDetail;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderInfo;
@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    private OrderInfoRepository orderInfoRepository;
-    private OrderDetailRepository orderDetailRepository;
-    private CustomerRepository customerRepository;
+    private final OrderInfoRepository orderInfoRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final CustomerRepository customerRepository;
 
     @Autowired
     public OrderService(OrderInfoRepository orderInfoRepository,
@@ -29,10 +29,16 @@ public class OrderService {
         this.customerRepository = customerRepository;
     }
 
-    public ErrorList addOrder(OrderInfo orderInfo) {
+    public HTTPAnswer addOrder(OrderInfo orderInfo) {
         List<String> errors = new OrderValidator(orderInfo).validate();
         if (errors.size() == 0) saveOrderAndAttachedEntities(orderInfo);
-        return new ErrorList(errors);
+        return createHTTPAnswer(errors);
+    }
+
+    private HTTPAnswer createHTTPAnswer(List<String> errors) {
+        if(errors.size() > 0)
+            return new HTTPAnswer(400, errors);
+        return new HTTPAnswer(200, errors);
     }
 
     private void saveOrderAndAttachedEntities(OrderInfo orderInfo) {

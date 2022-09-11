@@ -7,6 +7,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorList {
+public class HTTPAnswer {
+    public int status;
     public List<String> errors;
 }
