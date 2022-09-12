@@ -30,7 +30,7 @@ public class TaskService {
     public HTTPAnswer add(Task task){
         List<String> errors = new TaskValidator(task, userInfoRepository).validate();
         if (errors.size() == 0) saveTask(task);
-        return createHTTPAnswer(errors);
+        return HTTPAnswer.create(errors);
     }
 
     private void saveTask(Task task) {
@@ -43,11 +43,4 @@ public class TaskService {
         Optional<UserInfo> user = userInfoRepository.findById(users.stream().findFirst().get().getId());
         task.setUser(user.get());
     }
-
-    private HTTPAnswer createHTTPAnswer(List<String> errors) {
-        if(errors.size() > 0)
-            return new HTTPAnswer(400, errors);
-        return new HTTPAnswer(200, errors);
-    }
-
 }
