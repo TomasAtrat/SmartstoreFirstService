@@ -1,12 +1,14 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "customer")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "document", nullable = false, length = 64)
     private String id;
 

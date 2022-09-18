@@ -51,7 +51,9 @@ public class OrderService {
     }
 
     public OrderDetail addDetail(OrderDetail orderDetail) {
-        return orderDetailRepository.save(orderDetail);
+        if(orderInfoRepository.existsById(orderDetail.getOrderInfo().getId()))
+            return orderDetailRepository.save(orderDetail);
+        return null;
     }
 
 }
