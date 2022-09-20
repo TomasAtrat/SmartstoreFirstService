@@ -2,12 +2,12 @@ package com.smartstore.smartstorewebservice.microservices.inventory.validation;
 
 import com.smartstore.smartstorewebservice.common.data.InventoryData;
 import com.smartstore.smartstorewebservice.common.validation.IValidator;
-import com.smartstore.smartstorewebservice.common.validation.validationRules.ExistProductValidationRule;
+import com.smartstore.smartstorewebservice.common.validation.validationRules.ExistBarcodeValidationRule;
 import com.smartstore.smartstorewebservice.common.validation.validationRules.ExistUserValidationRule;
 import com.smartstore.smartstorewebservice.common.validation.validationRules.MaxStringLengthValidationRule;
 import com.smartstore.smartstorewebservice.common.validation.validationRules.ValueGreaterThanValidationRule;
 import com.smartstore.smartstorewebservice.dataAccess.entities.InventoryDetail;
-import com.smartstore.smartstorewebservice.dataAccess.repositories.ProductRepository;
+import com.smartstore.smartstorewebservice.dataAccess.repositories.BarcodeRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.UserInfoRepository;
 
 import java.util.ArrayList;
@@ -17,14 +17,14 @@ public class InventoryValidator implements IValidator {
 
     private List<String> errors;
     private InventoryData inventory;
-    private ProductRepository productRepository;
+    private BarcodeRepository barcodeRepository;
     private UserInfoRepository userInfoRepository;
 
     public InventoryValidator(InventoryData inventory,
-                              ProductRepository productRepository,
+                              BarcodeRepository barcodeRepository,
                               UserInfoRepository userInfoRepository) {
         this.inventory = inventory;
-        this.productRepository = productRepository;
+        this.barcodeRepository = barcodeRepository;
         this.userInfoRepository = userInfoRepository;
         this.errors = new ArrayList<>();
     }
@@ -37,7 +37,7 @@ public class InventoryValidator implements IValidator {
             validateSupposedQuantity(detail);
             validateReadQuantity(detail);
             validateAcceptedQuantity(detail);
-            validateProduct(detail);
+            validateBarcode(detail);
         });
         return errors;
     }
@@ -83,9 +83,9 @@ public class InventoryValidator implements IValidator {
         }
     }
 
-    private void validateProduct(InventoryDetail detail) {
-        if (detail.getProductCode() != null) {
-            String validProduct = new ExistProductValidationRule(detail.getProductCode(), productRepository).validate();
+    private void validateBarcode(InventoryDetail detail) {
+        if (detail.getBarcode() != null) {
+            String validProduct = new ExistBarcodeValidationRule(detail.getBarcode(), barcodeRepository).validate();
             if(validProduct.length() > 0) errors.add("Producto: " + validProduct);
         }
         else {

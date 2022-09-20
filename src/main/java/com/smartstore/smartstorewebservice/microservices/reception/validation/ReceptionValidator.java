@@ -2,11 +2,9 @@ package com.smartstore.smartstorewebservice.microservices.reception.validation;
 
 import com.smartstore.smartstorewebservice.common.data.Reception;
 import com.smartstore.smartstorewebservice.common.validation.IValidator;
-import com.smartstore.smartstorewebservice.common.validation.validationRules.ExistProductValidationRule;
-import com.smartstore.smartstorewebservice.common.validation.validationRules.ExistUserValidationRule;
-import com.smartstore.smartstorewebservice.common.validation.validationRules.MaxStringLengthValidationRule;
-import com.smartstore.smartstorewebservice.common.validation.validationRules.ValueGreaterThanValidationRule;
+import com.smartstore.smartstorewebservice.common.validation.validationRules.*;
 import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionDetail;
+import com.smartstore.smartstorewebservice.dataAccess.repositories.BarcodeRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.ProductRepository;
 
 import java.util.ArrayList;
@@ -15,11 +13,11 @@ import java.util.List;
 public class ReceptionValidator implements IValidator {
     private final ArrayList<String> errors;
     private Reception reception;
-    private ProductRepository productRepository;
+    private BarcodeRepository barcodeRepository;
 
-    public ReceptionValidator(Reception reception, ProductRepository productRepository){
+    public ReceptionValidator(Reception reception, BarcodeRepository barcodeRepository){
         this.reception = reception;
-        this.productRepository = productRepository;
+        this.barcodeRepository = barcodeRepository;
         this.errors = new ArrayList<>();
     }
 
@@ -37,8 +35,8 @@ public class ReceptionValidator implements IValidator {
     }
 
     private void validateProduct(ReceptionDetail detail) {
-        if (detail.getProductCode() != null) {
-            String validProduct = new ExistProductValidationRule(detail.getProductCode(), productRepository).validate();
+        if (detail.getBarcode() != null) {
+            String validProduct = new ExistBarcodeValidationRule(detail.getBarcode(), barcodeRepository).validate();
             if(validProduct.length() > 0) errors.add("Producto: " + validProduct);
         }
         else {

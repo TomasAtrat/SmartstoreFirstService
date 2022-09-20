@@ -18,10 +18,10 @@ public class AuthService {
         this.userInfoRepository = userInfoRepository;
     }
 
-    public UserInfo getUserIfAuthenticated(UserInfo userInfo) {
-        var user = this.userInfoRepository.findByUsername(userInfo.getUsername());
+    public UserInfo getUserIfAuthenticated(String username, String password) {
+        var user = this.userInfoRepository.findByUsername(username);
 
-        if (encoder.matches(userInfo.getPasswordHash(), user.getPasswordHash()) && user.getActive()) {
+        if (encoder.matches(password, user.getPasswordHash()) && user.getActive()) {
             user.setPasswordHash("");
             return user;
         }

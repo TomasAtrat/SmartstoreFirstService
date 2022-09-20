@@ -21,8 +21,8 @@ public class ReceptionDetail {
     private ReceptionList receptionList;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_code")
-    private Product productCode;
+    @JoinColumn(name = "barcode")
+    private Barcode barcode;
 
     public Long getId() {
         return id;
@@ -56,12 +56,12 @@ public class ReceptionDetail {
         this.receptionList = receptionList;
     }
 
-    public Product getProductCode() {
-        return productCode;
+    public Barcode getBarcode() {
+        return barcode;
     }
 
-    public void setProductCode(Product productCode) {
-        this.productCode = productCode;
+    public void setBarcode(Barcode barcode) {
+        this.barcode = barcode;
     }
 
 }
