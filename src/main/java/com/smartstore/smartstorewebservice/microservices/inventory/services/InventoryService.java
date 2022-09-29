@@ -16,45 +16,55 @@ import java.util.Optional;
 public class InventoryService {
     private InventoryRepository inventoryRepository;
     private InventoryDetailRepository inventoryDetailRepository;
+    private InventoryProblemRepository inventoryProblemRepository;
     private BarcodeRepository barcodeRepository;
     private UserInfoRepository userInfoRepository;
 
     public InventoryService(InventoryRepository inventoryRepository,
                             InventoryDetailRepository inventoryDetailRepository,
+                            InventoryProblemRepository inventoryProblemRepository,
                             BarcodeRepository barcodeRepository,
-                            UserInfoRepository userInfoRepository){
+                            UserInfoRepository userInfoRepository) {
         this.inventoryRepository = inventoryRepository;
         this.inventoryDetailRepository = inventoryDetailRepository;
+        this.inventoryProblemRepository = inventoryProblemRepository;
         this.barcodeRepository = barcodeRepository;
         this.userInfoRepository = userInfoRepository;
     }
 
-    public HTTPAnswer addInventory(InventoryData inventory){
+    public HTTPAnswer addInventory(InventoryData inventory) {
         List<String> errors = new InventoryValidator(inventory, barcodeRepository, userInfoRepository).validate();
-        if (errors.size() == 0) saveInventoryAndDetails(inventory);
+        if (errors.size() == 0) saveInventoryAndAttachedObjects(inventory);
         return HTTPAnswer.create(errors);
     }
 
-    private void saveInventoryAndDetails(InventoryData inventory) {
-        inventory.getInventory().setAddDate(new Date());
+    private void saveInventoryAndAttachedObjects(InventoryData inventory) {
+        if (inventory.getInventory().getAddDate() == null)
+            inventory.getInventory().setAddDate(new Date());
+
         var inv = this.inventoryRepository.save(inventory.getInventory());
-        inventory.getDetails().forEach(detail ->{
+
+        inventory.getDetails().forEach(detail -> {
             detail.setInventory(inv);
             this.inventoryDetailRepository.save(detail);
         });
+
+        var problems = inventory.getProblems();
+        if (problems != null && problems.size() > 0)
+            inventoryProblemRepository.saveAll(problems);
     }
 
     public List<Inventory> getAvailableInventories() {
-        var inventories =  this.inventoryRepository.findAllByActiveIsTrue();
-        inventories.forEach(i-> i.getUserAssigned().setPasswordHash(""));
+        var inventories = this.inventoryRepository.findAllByActiveIsTrue();
+        inventories.forEach(i -> i.getUserAssigned().setPasswordHash(""));
         return inventories;
     }
 
     public List<InventoryDetail> getInventoryDetails(Long id) {
         Optional<Inventory> inventory = this.inventoryRepository.findById(id);
-        if(inventory.isPresent()) {
+        if (inventory.isPresent()) {
             var details = this.inventoryDetailRepository.findAllByInventory(inventory);
-            details.forEach(i-> i.setInventory(null));
+            details.forEach(i -> i.setInventory(null));
             return details;
         }
         return null;

@@ -16,6 +16,9 @@ public class ReceptionDetail {
     @Column(name = "received_qty")
     private Integer receivedQty;
 
+    @Column(name = "accepted_qty")
+    private Integer acceptedQty;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reception_list_id")
     private ReceptionList receptionList;
@@ -46,6 +49,14 @@ public class ReceptionDetail {
 
     public void setReceivedQty(Integer receivedQty) {
         this.receivedQty = receivedQty;
+    }
+
+    public Integer getAcceptedQty() {
+        return acceptedQty;
+    }
+
+    public void setAcceptedQty(Integer acceptedQty) {
+        this.acceptedQty = acceptedQty;
     }
 
     public ReceptionList getReceptionList() {

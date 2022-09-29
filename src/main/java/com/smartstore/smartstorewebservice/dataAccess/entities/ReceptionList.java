@@ -1,7 +1,7 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "reception_list")
@@ -15,10 +15,10 @@ public class ReceptionList {
     private String description;
 
     @Column(name = "starting_date")
-    private LocalDate startingDate;
+    private Date startingDate;
 
     @Column(name = "ending_date")
-    private LocalDate endingDate;
+    private Date endingDate;
 
     public Long getId() {
         return id;
@@ -36,19 +36,19 @@ public class ReceptionList {
         this.description = description;
     }
 
-    public LocalDate getStartingDate() {
+    public Date getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(LocalDate startingDate) {
+    public void setStartingDate(Date startingDate) {
         this.startingDate = startingDate;
     }
 
-    public LocalDate getEndingDate() {
+    public Date getEndingDate() {
         return endingDate;
     }
 
-    public void setEndingDate(LocalDate endingDate) {
+    public void setEndingDate(Date endingDate) {
         this.endingDate = endingDate;
     }
 
