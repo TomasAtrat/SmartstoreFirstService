@@ -2,6 +2,8 @@ package com.smartstore.smartstorewebservice.microservices.reception.services;
 
 import com.smartstore.smartstorewebservice.common.data.Reception;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
+import com.smartstore.smartstorewebservice.dataAccess.entities.Inventory;
+import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionDetail;
 import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionList;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.BarcodeRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.ReceptionDetailRepository;
@@ -11,6 +13,7 @@ import com.smartstore.smartstorewebservice.microservices.reception.validation.Re
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReceptionService {
@@ -50,5 +53,16 @@ public class ReceptionService {
     public List<ReceptionList> getAvailableReferences() {
         var references = this.receptionListRepository.findAllByEndingDateIsNull();
         return references;
+    }
+
+    public List<ReceptionDetail> getReceptionDetails(Long id) {
+        Optional<ReceptionList> reception = this.receptionListRepository.findById(id);
+        if (reception.isPresent()) {
+            var details = this.receptionDetailRepository.findAllByReceptionList(reception);
+            details.forEach(i -> i.setReceptionList(null));
+            return details;
+        }
+
+        return null;
     }
 }

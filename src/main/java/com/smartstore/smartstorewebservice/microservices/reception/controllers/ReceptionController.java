@@ -1,5 +1,6 @@
 package com.smartstore.smartstorewebservice.microservices.reception.controllers;
 
+import com.smartstore.smartstorewebservice.common.data.InventoryData;
 import com.smartstore.smartstorewebservice.common.data.Reception;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
 import com.smartstore.smartstorewebservice.common.wrappers.ListOfInventories;
@@ -25,5 +26,9 @@ public class ReceptionController {
         return new ListOfReception(this.receptionService.getAvailableReferences());
     }
 
+    @GetMapping("/details/{id}")
+    public Reception getInventoryDetails(@PathVariable Long id) {
+        return new Reception(null, this.receptionService.getReceptionDetails(id), null);
+    }
 }
 
