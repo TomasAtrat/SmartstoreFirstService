@@ -1,7 +1,7 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "stock")
@@ -15,7 +15,7 @@ public class Stock {
     private Integer version;
 
     @Column(name = "add_date")
-    private Instant addDate;
+    private Date addDate;
 
     @Column(name = "qt_reserve")
     private Long qtReserve;
@@ -24,14 +24,15 @@ public class Stock {
     private Long qtStock;
 
     @Column(name = "update_date")
-    private Instant updateDate;
+    private Date updateDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "barcode_barcode")
     private Barcode barcodeBarcode;
 
-    @Column(name = "id_branch")
-    private Long idBranch;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 
     public Long getId() {
         return id;
@@ -49,11 +50,11 @@ public class Stock {
         this.version = version;
     }
 
-    public Instant getAddDate() {
+    public Date getAddDate() {
         return addDate;
     }
 
-    public void setAddDate(Instant addDate) {
+    public void setAddDate(Date addDate) {
         this.addDate = addDate;
     }
 
@@ -73,11 +74,11 @@ public class Stock {
         this.qtStock = qtStock;
     }
 
-    public Instant getUpdateDate() {
+    public Date getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Instant updateDate) {
+    public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
     }
 
@@ -89,12 +90,12 @@ public class Stock {
         this.barcodeBarcode = barcodeBarcode;
     }
 
-    public Long getIdBranch() {
-        return idBranch;
+    public Branch getBranch() {
+        return branch;
     }
 
-    public void setIdBranch(Long idBranch) {
-        this.idBranch = idBranch;
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
 }

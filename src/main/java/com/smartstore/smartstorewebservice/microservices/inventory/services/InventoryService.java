@@ -2,6 +2,7 @@ package com.smartstore.smartstorewebservice.microservices.inventory.services;
 
 import com.smartstore.smartstorewebservice.common.data.InventoryData;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
+import com.smartstore.smartstorewebservice.dataAccess.entities.Branch;
 import com.smartstore.smartstorewebservice.dataAccess.entities.Inventory;
 import com.smartstore.smartstorewebservice.dataAccess.entities.InventoryDetail;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.*;
@@ -19,17 +20,20 @@ public class InventoryService {
     private InventoryProblemRepository inventoryProblemRepository;
     private BarcodeRepository barcodeRepository;
     private UserInfoRepository userInfoRepository;
+    private StockRepository stockRepository;
 
     public InventoryService(InventoryRepository inventoryRepository,
                             InventoryDetailRepository inventoryDetailRepository,
                             InventoryProblemRepository inventoryProblemRepository,
                             BarcodeRepository barcodeRepository,
-                            UserInfoRepository userInfoRepository) {
+                            UserInfoRepository userInfoRepository,
+                            StockRepository stockRepository) {
         this.inventoryRepository = inventoryRepository;
         this.inventoryDetailRepository = inventoryDetailRepository;
         this.inventoryProblemRepository = inventoryProblemRepository;
         this.barcodeRepository = barcodeRepository;
         this.userInfoRepository = userInfoRepository;
+        this.stockRepository = stockRepository;
     }
 
     public HTTPAnswer addInventory(InventoryData inventory) {
@@ -50,8 +54,22 @@ public class InventoryService {
         });
 
         var problems = inventory.getProblems();
+
         if (problems != null && problems.size() > 0)
             inventoryProblemRepository.saveAll(problems);
+        else updateStock(inventory.getDetails());
+    }
+
+    private void updateStock(List<InventoryDetail> details) {
+        details.forEach(detail-> {
+            var branch = new Branch();
+            branch.setId(detail.getInventory().getUserAssigned().getIdBranch());
+            var stock = stockRepository.findByBarcodeBarcodeAndBranch(detail.getBarcode(), branch);
+
+            stock.setQtStock(stock.getQtStock() + detail.getReadQty());
+
+            stockRepository.save(stock);
+        });
     }
 
     public List<Inventory> getAvailableInventories() {

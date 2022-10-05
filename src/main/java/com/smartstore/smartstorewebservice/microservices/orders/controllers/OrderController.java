@@ -2,6 +2,7 @@ package com.smartstore.smartstorewebservice.microservices.orders.controllers;
 
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
 import com.smartstore.smartstorewebservice.common.wrappers.ListOfOrderWrapper;
+import com.smartstore.smartstorewebservice.common.wrappers.OrderWrapper;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderDetail;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderInfo;
 import com.smartstore.smartstorewebservice.microservices.orders.services.OrderService;
@@ -18,8 +19,14 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/")
-    public HTTPAnswer addOrder(@RequestBody final OrderInfo order) {
-        return orderService.addOrder(order);
+    public HTTPAnswer addOrder(@RequestBody final OrderWrapper order) {
+        List<String> errors = orderService.isOrderValid(order);
+        if(errors.size() == 0){
+            orderService.saveCustomer(order.getOrderInfo().getCustomer());
+            orderService.saveDetails(order.getOrderDetailList());
+        }
+
+        return HTTPAnswer.create(errors);
     }
 
     @GetMapping("/")

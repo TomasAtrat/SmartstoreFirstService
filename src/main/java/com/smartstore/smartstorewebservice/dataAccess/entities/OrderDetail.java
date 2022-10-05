@@ -1,5 +1,8 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,6 +23,7 @@ public class OrderDetail {
     @JoinColumn(name = "barcode")
     private Barcode barcode;
 
+    @Cascade(CascadeType.ALL)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_info_id")
     private OrderInfo orderInfo;

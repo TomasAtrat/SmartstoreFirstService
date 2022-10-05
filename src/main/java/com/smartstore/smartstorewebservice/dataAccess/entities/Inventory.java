@@ -24,7 +24,6 @@ public class Inventory {
     private Date endingDate;
 
     @Column(name = "add_date")
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private Date addDate;
 
     @Column(name = "active")

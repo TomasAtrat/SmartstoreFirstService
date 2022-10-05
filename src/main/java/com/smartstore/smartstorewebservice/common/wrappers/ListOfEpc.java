@@ -1,6 +1,6 @@
 package com.smartstore.smartstorewebservice.common.wrappers;
 
-import com.smartstore.smartstorewebservice.dataAccess.entities.Inventory;
+import com.smartstore.smartstorewebservice.dataAccess.entities.EpcBarcode;
 import lombok.*;
 
 import java.util.List;
@@ -10,6 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ListOfInventories {
-    private List<Inventory> inventories;
+public class ListOfEpc {
+    private List<EpcBarcode> epcBarcodeList;
 }

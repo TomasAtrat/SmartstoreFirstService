@@ -4,7 +4,15 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "user_info")
-public class UserInfo extends AbstractEntity {
+public class UserInfo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
     @Column(name = "active")
     private Boolean active;
 
@@ -28,6 +36,25 @@ public class UserInfo extends AbstractEntity {
 
     @Column(name = "username")
     private String username;
+
+    @Column(name = "id_branch")
+    private Long idBranch;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     public Boolean getActive() {
         return active;
@@ -91,6 +118,14 @@ public class UserInfo extends AbstractEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getIdBranch() {
+        return idBranch;
+    }
+
+    public void setIdBranch(Long idBranch) {
+        this.idBranch = idBranch;
     }
 
 }
