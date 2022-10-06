@@ -21,7 +21,7 @@ public class OrderController {
     @PostMapping("/")
     public HTTPAnswer addOrder(@RequestBody final OrderWrapper order) {
         List<String> errors = orderService.isOrderValid(order);
-        if(errors.size() == 0){
+        if (errors.size() == 0) {
             orderService.saveCustomer(order.getOrderInfo().getCustomer());
             orderService.saveDetails(order.getOrderDetailList());
         }
@@ -42,5 +42,10 @@ public class OrderController {
     @GetMapping("details/")
     public List<OrderDetail> getDetails() {
         return null;
+    }
+
+    @GetMapping("/to-prepare")
+    public ListOfOrderWrapper getOrdersToPrepare() {
+        return new ListOfOrderWrapper(this.orderService.getOrdersToPrepare());
     }
 }

@@ -1,13 +1,15 @@
 package com.smartstore.smartstorewebservice.dataAccess.entities;
 
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "order_info")
-public class OrderInfo extends AbstractEntity {
+public class OrderInfo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
     @Column(name = "delivery_date")
     private Date deliveryDate;
@@ -44,6 +46,20 @@ public class OrderInfo extends AbstractEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+    @Column(name = "is_completely_prepared")
+    private Boolean isCompletelyPrepared;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Date getDeliveryDate() {
         return deliveryDate;
@@ -131,6 +147,22 @@ public class OrderInfo extends AbstractEntity {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public Boolean getIsCompletelyPrepared() {
+        return isCompletelyPrepared;
+    }
+
+    public void setIsCompletelyPrepared(Boolean isCompletelyPrepared) {
+        this.isCompletelyPrepared = isCompletelyPrepared;
     }
 
 }
