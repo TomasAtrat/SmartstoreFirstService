@@ -1,5 +1,6 @@
 package com.smartstore.smartstorewebservice.microservices.preparation.services;
 
+import com.smartstore.smartstorewebservice.common.wrappers.PreparationWrapper;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderDetail;
 import com.smartstore.smartstorewebservice.dataAccess.entities.OrderInfo;
 import com.smartstore.smartstorewebservice.dataAccess.entities.Preparation;
@@ -7,6 +8,7 @@ import com.smartstore.smartstorewebservice.dataAccess.entities.PreparationDetail
 import com.smartstore.smartstorewebservice.dataAccess.repositories.PreparationDetailRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.PreparationRepository;
 import com.smartstore.smartstorewebservice.microservices.orders.services.OrderService;
+import com.smartstore.smartstorewebservice.microservices.preparation.services.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,35 +22,69 @@ public class PreparationService {
     private PreparationRepository preparationRepository;
     private PreparationDetailRepository preparationDetailRepository;
     private OrderService orderService;
+    private UserService userService;
 
 
     @Autowired
     public PreparationService(PreparationRepository preparationRepository,
                               PreparationDetailRepository preparationDetailRepository,
-                              OrderService orderService) {
+                              OrderService orderService,
+                              UserService userService) {
         this.preparationRepository = preparationRepository;
         this.preparationDetailRepository = preparationDetailRepository;
-
         this.orderService = orderService;
+        this.userService = userService;
     }
 
-    public Preparation getPreparation(Long orderId){
+    public PreparationWrapper getPreparation(Long orderId, Long user_id) {
         Preparation preparation = null;
-        List<PreparationDetail> details;
+        List<PreparationDetail> details = null;
 
         var order = orderService.getOrderById(orderId);
 
-        if(order.isPresent()){
+        if (order.isPresent()) {
             List<Preparation> preparations = preparationRepository.findAllByOrder(order.get());
 
-            if(preparations == null || preparations.size() == 0){
-                preparation = createPreparation(order.get());
+            if (preparations == null || preparations.size() == 0) {
+                preparation = createPreparation(order.get(), user_id);
                 details = createPreparationDetails(preparation, order.get());
+            } else if (preparations.stream().allMatch(Preparation::getIsFinished) && order.get().getAcceptsPartialExpedition()) {
+                var previousPreparation = preparations.stream().filter(Preparation::getIsFinished).findFirst().get();
+                preparation = createPreparation(previousPreparation.getOrder(), user_id);
+                details = createDetailsFromPreviousPreparation(preparation);
+            } else if (preparations.stream().noneMatch(Preparation::getIsFinished)) {
+                preparation = preparations.stream().filter(i -> !i.getIsFinished()).findFirst().orElse(null);
+                details = createDetailsFromPreviousPreparation(preparation);
+            }
+
+            if (preparation != null) {
                 savePreparationAndDetails(preparation, details);
+                removeSensibleInformation(preparation, details);
             }
         }
 
-        return preparation;
+        return new PreparationWrapper(preparation, details);
+    }
+
+    private void removeSensibleInformation(Preparation preparation, List<PreparationDetail> details) {
+        preparation.getUserAssigned().setPasswordHash("");
+        details.forEach(i -> i.setPreparation(preparation));
+    }
+
+    private List<PreparationDetail> createDetailsFromPreviousPreparation(Preparation preparation) {
+        List<PreparationDetail> details = new ArrayList<>();
+        var previousDetails = this.preparationDetailRepository.findAllByPreparation(preparation);
+        previousDetails.stream().filter(f -> f.getOrderedQty() - f.getPreparedQty() != 0).forEach(i -> {
+            PreparationDetail detail = new PreparationDetail();
+            detail.setPreparation(preparation);
+            detail.setOrderedQty(i.getOrderedQty() - i.getPreparedQty());
+            detail.setPreparedQty(0);
+            detail.setBarcode(i.getBarcode());
+            detail.setAddDate(new Date());
+            details.add(detail);
+        });
+
+        return details;
     }
 
     private void savePreparationAndDetails(Preparation preparation, List<PreparationDetail> details) {
@@ -59,7 +95,7 @@ public class PreparationService {
     private List<PreparationDetail> createPreparationDetails(Preparation preparation, OrderInfo order) {
         List<PreparationDetail> details = new ArrayList<>();
         var orderDetails = this.orderService.getOrderDetailsByOrder(order);
-        orderDetails.forEach(i->{
+        orderDetails.forEach(i -> {
             details.add(createPreparationDetail(preparation, i));
         });
         return details;
@@ -75,11 +111,12 @@ public class PreparationService {
         return det;
     }
 
-    private Preparation createPreparation(OrderInfo orderInfo) {
+    private Preparation createPreparation(OrderInfo orderInfo, Long user_id) {
         Preparation preparation = new Preparation();
         preparation.setOrder(orderInfo);
         preparation.setHasProblems(false);
         preparation.setIsFinished(false);
+        preparation.setUserAssigned(userService.getUserById(user_id).get());
         preparation.setAddDate(new Date());
         return preparation;
     }

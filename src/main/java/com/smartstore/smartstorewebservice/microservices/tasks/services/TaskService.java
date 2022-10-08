@@ -21,26 +21,30 @@ public class TaskService {
 
     public TaskService(TaskRepository taskRepository,
                        UserInfoRepository userInfoRepository,
-                       VTasksByUserRepository vTasksByUserRepository){
+                       VTasksByUserRepository vTasksByUserRepository) {
         this.taskRepository = taskRepository;
         this.userInfoRepository = userInfoRepository;
         this.vTasksByUserRepository = vTasksByUserRepository;
     }
 
-    public HTTPAnswer add(Task task){
+    public HTTPAnswer add(Task task) {
         List<String> errors = new TaskValidator(task, userInfoRepository).validate();
         if (errors.size() == 0) saveTask(task);
         return HTTPAnswer.create(errors);
     }
 
     private void saveTask(Task task) {
-        if(task.getUser() == null) assignUserToTask(task);
+        if (task.getUser() == null) assignUserToTask(task);
         taskRepository.save(task);
     }
 
     private void assignUserToTask(Task task) {
+        task.setUser(getUserWithLessTasks().get());
+    }
+
+    public Optional<UserInfo> getUserWithLessTasks() {
         var users = vTasksByUserRepository.findAll();
         Optional<UserInfo> user = userInfoRepository.findById(users.stream().findFirst().get().getId());
-        task.setUser(user.get());
+        return user;
     }
 }
