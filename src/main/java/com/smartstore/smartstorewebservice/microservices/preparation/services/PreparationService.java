@@ -120,4 +120,8 @@ public class PreparationService {
         preparation.setAddDate(new Date());
         return preparation;
     }
+
+    public void savePreparationWrapper(PreparationWrapper wrapper) {
+        savePreparationAndDetails(wrapper.getPreparation(), wrapper.getDetails());
+    }
 }
