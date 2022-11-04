@@ -18,7 +18,8 @@ public class PreparationController {
     }
 
     @PostMapping("/")
-    public void savePreparation(@RequestBody PreparationWrapper wrapper) {
+    public PreparationWrapper savePreparation(@RequestBody PreparationWrapper wrapper) {
         this.preparationService.savePreparationWrapper(wrapper);
+        return wrapper;
     }
 }

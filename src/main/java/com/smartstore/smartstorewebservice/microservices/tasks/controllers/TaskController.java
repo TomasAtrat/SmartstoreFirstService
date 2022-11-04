@@ -26,4 +26,9 @@ public class TaskController {
         return answers;
     }
 
+    @PostMapping("/task")
+    public HTTPAnswer addTask(@RequestBody final Task task) {
+        return taskService.add(task);
+    }
+
 }

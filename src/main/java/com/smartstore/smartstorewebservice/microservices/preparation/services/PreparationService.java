@@ -72,19 +72,16 @@ public class PreparationService {
     }
 
     private List<PreparationDetail> createDetailsFromPreviousPreparation(Preparation preparation) {
-        List<PreparationDetail> details = new ArrayList<>();
         var previousDetails = this.preparationDetailRepository.findAllByPreparation(preparation);
         previousDetails.stream().filter(f -> f.getOrderedQty() - f.getPreparedQty() != 0).forEach(i -> {
-            PreparationDetail detail = new PreparationDetail();
-            detail.setPreparation(preparation);
-            detail.setOrderedQty(i.getOrderedQty() - i.getPreparedQty());
-            detail.setPreparedQty(0);
-            detail.setBarcode(i.getBarcode());
-            detail.setAddDate(new Date());
-            details.add(detail);
+            i.setPreparation(preparation);
+            i.setOrderedQty(i.getOrderedQty() - i.getPreparedQty());
+            i.setPreparedQty(0);
+            i.setBarcode(i.getBarcode());
+            i.setAddDate(new Date());
         });
 
-        return details;
+        return previousDetails;
     }
 
     private void savePreparationAndDetails(Preparation preparation, List<PreparationDetail> details) {
