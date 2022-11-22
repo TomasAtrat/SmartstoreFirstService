@@ -76,7 +76,7 @@ public class OrderService {
     }
 
     public List<OrderInfo> getOrdersToPrepare(){
-        var ordersToPrepare = vOrdersToPrepareRepository.findAll();
+        List<VOrdersToPrepare> ordersToPrepare = vOrdersToPrepareRepository.findAll();
         List<OrderInfo> orders = new ArrayList<>();
 
         ordersToPrepare.forEach(i-> {

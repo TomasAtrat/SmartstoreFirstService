@@ -3,6 +3,7 @@ package com.smartstore.smartstorewebservice.microservices.tasks.services;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
 import com.smartstore.smartstorewebservice.dataAccess.entities.Task;
 import com.smartstore.smartstorewebservice.dataAccess.entities.UserInfo;
+import com.smartstore.smartstorewebservice.dataAccess.entities.VTasksByUser;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.TaskRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.UserInfoRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.VTasksByUserRepository;
@@ -43,7 +44,7 @@ public class TaskService {
     }
 
     public Optional<UserInfo> getUserWithLessTasks() {
-        var users = vTasksByUserRepository.findAll();
+        List<VTasksByUser> users = vTasksByUserRepository.findAll();
         Optional<UserInfo> user = userInfoRepository.findById(users.stream().findFirst().get().getId());
         return user;
     }

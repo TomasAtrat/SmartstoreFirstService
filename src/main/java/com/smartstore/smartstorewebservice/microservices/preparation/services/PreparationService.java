@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PreparationService {
@@ -40,7 +41,7 @@ public class PreparationService {
         Preparation preparation = null;
         List<PreparationDetail> details = null;
 
-        var order = orderService.getOrderById(orderId);
+        Optional<OrderInfo> order = orderService.getOrderById(orderId);
 
         if (order.isPresent()) {
             List<Preparation> preparations = preparationRepository.findAllByOrder(order.get());
@@ -49,7 +50,7 @@ public class PreparationService {
                 preparation = createPreparation(order.get(), user_id);
                 details = createPreparationDetails(preparation, order.get());
             } else if (preparations.stream().allMatch(Preparation::getIsFinished) && order.get().getAcceptsPartialExpedition()) {
-                var previousPreparation = preparations.stream().filter(Preparation::getIsFinished).findFirst().get();
+                Preparation previousPreparation = preparations.stream().filter(Preparation::getIsFinished).findFirst().get();
                 preparation = createPreparation(previousPreparation.getOrder(), user_id);
                 details = createDetailsFromPreviousPreparation(preparation);
             } else if (preparations.stream().noneMatch(Preparation::getIsFinished)) {
@@ -72,7 +73,7 @@ public class PreparationService {
     }
 
     private List<PreparationDetail> createDetailsFromPreviousPreparation(Preparation preparation) {
-        var previousDetails = this.preparationDetailRepository.findAllByPreparation(preparation);
+        List<PreparationDetail> previousDetails = this.preparationDetailRepository.findAllByPreparation(preparation);
         previousDetails.stream().filter(f -> f.getOrderedQty() - f.getPreparedQty() != 0).forEach(i -> {
             i.setPreparation(preparation);
             i.setOrderedQty(i.getOrderedQty() - i.getPreparedQty());
@@ -91,7 +92,7 @@ public class PreparationService {
 
     private List<PreparationDetail> createPreparationDetails(Preparation preparation, OrderInfo order) {
         List<PreparationDetail> details = new ArrayList<>();
-        var orderDetails = this.orderService.getOrderDetailsByOrder(order);
+        List<OrderDetail> orderDetails = this.orderService.getOrderDetailsByOrder(order);
         orderDetails.forEach(i -> {
             details.add(createPreparationDetail(preparation, i));
         });

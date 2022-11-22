@@ -2,9 +2,9 @@ package com.smartstore.smartstorewebservice.microservices.reception.services;
 
 import com.smartstore.smartstorewebservice.common.data.Reception;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
-import com.smartstore.smartstorewebservice.dataAccess.entities.Inventory;
 import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionDetail;
 import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionList;
+import com.smartstore.smartstorewebservice.dataAccess.entities.ReceptionProblem;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.BarcodeRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.ReceptionDetailRepository;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.ReceptionListRepository;
@@ -39,26 +39,26 @@ public class ReceptionService {
     }
 
     private void saveReceptionListAndDetails(Reception reception) {
-        var list = this.receptionListRepository.save(reception.getReceptionList());
+        ReceptionList list = this.receptionListRepository.save(reception.getReceptionList());
         reception.getDetails().forEach(detail -> {
             detail.setReceptionList(list);
             this.receptionDetailRepository.save(detail);
         });
 
-        var problems = reception.getProblems();
+        List<ReceptionProblem> problems = reception.getProblems();
         if (problems != null && problems.size() > 0)
             receptionProblemRepository.saveAll(problems);
     }
 
     public List<ReceptionList> getAvailableReferences() {
-        var references = this.receptionListRepository.findAllByEndingDateIsNull();
+        List<ReceptionList> references = this.receptionListRepository.findAllByEndingDateIsNull();
         return references;
     }
 
     public List<ReceptionDetail> getReceptionDetails(Long id) {
         Optional<ReceptionList> reception = this.receptionListRepository.findById(id);
         if (reception.isPresent()) {
-            var details = this.receptionDetailRepository.findAllByReceptionList(reception);
+            List<ReceptionDetail> details = this.receptionDetailRepository.findAllByReceptionList(reception);
             details.forEach(i -> i.setReceptionList(null));
             return details;
         }

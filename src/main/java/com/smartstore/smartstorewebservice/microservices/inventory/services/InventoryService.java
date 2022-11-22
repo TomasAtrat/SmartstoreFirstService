@@ -2,9 +2,7 @@ package com.smartstore.smartstorewebservice.microservices.inventory.services;
 
 import com.smartstore.smartstorewebservice.common.data.InventoryData;
 import com.smartstore.smartstorewebservice.common.wrappers.HTTPAnswer;
-import com.smartstore.smartstorewebservice.dataAccess.entities.Branch;
-import com.smartstore.smartstorewebservice.dataAccess.entities.Inventory;
-import com.smartstore.smartstorewebservice.dataAccess.entities.InventoryDetail;
+import com.smartstore.smartstorewebservice.dataAccess.entities.*;
 import com.smartstore.smartstorewebservice.dataAccess.repositories.*;
 import com.smartstore.smartstorewebservice.microservices.inventory.validation.InventoryValidator;
 import org.springframework.stereotype.Service;
@@ -46,14 +44,14 @@ public class InventoryService {
         if (inventory.getInventory().getAddDate() == null)
             inventory.getInventory().setAddDate(new Date());
 
-        var inv = this.inventoryRepository.save(inventory.getInventory());
+        Inventory inv = this.inventoryRepository.save(inventory.getInventory());
 
         inventory.getDetails().forEach(detail -> {
             detail.setInventory(inv);
             this.inventoryDetailRepository.save(detail);
         });
 
-        var problems = inventory.getProblems();
+        List<InventoryProblem> problems = inventory.getProblems();
 
         if (problems != null && problems.size() > 0)
             inventoryProblemRepository.saveAll(problems);
@@ -62,9 +60,9 @@ public class InventoryService {
 
     private void updateStock(List<InventoryDetail> details) {
         details.forEach(detail-> {
-            var branch = new Branch();
+            Branch branch = new Branch();
             branch.setId(detail.getInventory().getUserAssigned().getIdBranch());
-            var stock = stockRepository.findByBarcodeBarcodeAndBranch(detail.getBarcode(), branch);
+            Stock stock = stockRepository.findByBarcodeBarcodeAndBranch(detail.getBarcode(), branch);
 
             stock.setQtStock(stock.getQtStock() + detail.getReadQty());
 
@@ -73,7 +71,7 @@ public class InventoryService {
     }
 
     public List<Inventory> getAvailableInventories() {
-        var inventories = this.inventoryRepository.findAllByActiveIsTrue();
+        List<Inventory> inventories = this.inventoryRepository.findAllByActiveIsTrue();
         inventories.forEach(i -> i.getUserAssigned().setPasswordHash(""));
         return inventories;
     }
@@ -81,7 +79,7 @@ public class InventoryService {
     public List<InventoryDetail> getInventoryDetails(Long id) {
         Optional<Inventory> inventory = this.inventoryRepository.findById(id);
         if (inventory.isPresent()) {
-            var details = this.inventoryDetailRepository.findAllByInventory(inventory);
+            List<InventoryDetail> details = this.inventoryDetailRepository.findAllByInventory(inventory);
             details.forEach(i -> i.setInventory(null));
             return details;
         }

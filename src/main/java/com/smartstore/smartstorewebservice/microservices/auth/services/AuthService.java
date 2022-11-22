@@ -19,7 +19,7 @@ public class AuthService {
     }
 
     public UserInfo getUserIfAuthenticated(String username, String password) {
-        var user = this.userInfoRepository.findByUsername(username);
+        UserInfo user = this.userInfoRepository.findByUsername(username);
 
         if (encoder.matches(password, user.getPasswordHash()) && user.getActive()) {
             user.setPasswordHash("");
